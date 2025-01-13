@@ -42,7 +42,7 @@ FROM node:22.13-alpine AS frontend
 # Having dependencies here ensures they are only
 # installed when needed.
 #####################################################
-FROM frontend AS deps
+FROM frontend AS frontend-base
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY /frontend/package.json /frontend/pnpm-lock.yaml* ./
@@ -55,7 +55,7 @@ RUN corepack enable pnpm && pnpm i --frozen-lockfile
 #####################################################
 FROM frontend AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=frontend-base /app/node_modules ./node_modules
 COPY /frontend .
 RUN corepack enable pnpm && pnpm run build
 
@@ -66,7 +66,7 @@ RUN corepack enable pnpm && pnpm run build
 #####################################################
 FROM frontend AS runner
 WORKDIR /app
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public

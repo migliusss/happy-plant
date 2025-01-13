@@ -1,0 +1,68 @@
+###################################################
+# This Compose file provides the development environment for the Happy Plant application.
+###################################################
+
+###################################################
+# Services
+#
+# The services define the individual components of our application stack.
+# For each service, a separate container will be launched.
+###################################################
+services:
+
+  ###################################################
+  # Service: backend
+  #
+  # This service is the Spring Boot server that provides the API for the app.
+  # When the container starts, it will use the image that results
+  # from building the Dockerfile, targeting the backend stage.
+  #
+  # The environment variables configure the application to connect to the
+  # database, which is also configured in this Compose file.
+  ###################################################
+  backend:
+    build:
+      context: ./
+      target: backend
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/happy-plant
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=secret
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    ports:
+      - 8080:8080
+
+  ###################################################
+  # Service: frontend
+  #
+  # The client service is the Next.js app that provides the frontend for the app.
+  # When the container starts, it will use the image that results from building
+  # the Dockerfile, targeting the frontend stage.
+  #
+  ###################################################
+  frontend:
+    build:
+      context: ./
+      target: runner
+    ports:
+      - 3000:3000
+
+  ###################################################
+  # Service: db
+  #
+  # The db service is used to provide the Postgres database for the application.
+  # The image for this service comes directly from Docker Hub and is a Docker
+  # Official Image.
+  #
+  # The environment variables configure the root password and the name of the
+  # database to create.
+  ###################################################
+  db:
+    image: postgres:17.2-alpine
+    environment:
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=happy_plant
+    ports:
+      - 5432:5432
