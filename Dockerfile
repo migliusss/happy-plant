@@ -49,6 +49,15 @@ COPY /frontend/package.json /frontend/pnpm-lock.yaml* ./
 RUN corepack enable pnpm && pnpm i --frozen-lockfile
 
 #####################################################
+# Stage: development
+#####################################################
+FROM frontend-base AS frontend-dev
+WORKDIR /app
+COPY /frontend .
+EXPOSE 3000
+CMD ["pnpm", "dev"]
+
+#####################################################
 # Stage: builder
 #
 # This stage is used to build the client application.
@@ -66,7 +75,7 @@ RUN corepack enable pnpm && pnpm run build
 #####################################################
 FROM frontend AS runner
 WORKDIR /app
-ENV NODE_ENV=development
+ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public

@@ -35,17 +35,19 @@ services:
       - 8080:8080
 
   ###################################################
-  # Service: frontend
+  # Service: frontend-dev
   #
   # The client service is the Next.js app that provides the frontend for the app.
   # When the container starts, it will use the image that results from building
-  # the Dockerfile, targeting the frontend stage.
-  #
+  # the Dockerfile, targeting the frontend-dev stage.
   ###################################################
   frontend:
     build:
-      context: ./
-      target: runner
+        context: ./
+        target: frontend-dev
+    volumes:
+        - ./frontend:/app # Mount local frontend directory to container
+        - /app/node_modules
     ports:
       - 3000:3000
 
