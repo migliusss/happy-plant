@@ -1,4 +1,4 @@
-# Happy Plant Application
+# 🪴 Happy Plant Application
 
 Happy Plant Frontend is a Next.js application made for managing houseplants. 
 Backend is a Java Spring Boot application that provides RESTful APIs for managing houseplants' care schedules.
