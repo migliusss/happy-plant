@@ -11,8 +11,8 @@ To spin up the project, simply install Docker Desktop and then run the following
 commands:
 
 ```
-git clone https://github.com/migliusss/Happy-plant.git
-cd Happy-plant
+git clone https://github.com/migliusss/Happy-Plant.git
+cd Happy-Plant
 docker compose up -d
 ```
 
