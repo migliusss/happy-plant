@@ -3,8 +3,6 @@
 Happy Plant Frontend is a Next.js application made for managing houseplants. 
 Backend is a Java Spring Boot application that provides RESTful APIs for managing houseplants' care schedules.
 
-## Application architecture
-
 ## Development
 
 To spin up the project, run the following commands:
@@ -15,7 +13,7 @@ cd Happy-Plant
 docker compose up -d
 ```
 
-### Tearing it down
+## Tearing it down
 
 When you're done, remove the containers by running the following command:
 
