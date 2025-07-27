@@ -62,7 +62,7 @@ services:
   db:
     image: postgres:latest
     environment:
-      - POSTGRES_USERNAME=postgres
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=happy_plant
     ports:
