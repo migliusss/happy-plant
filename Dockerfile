@@ -15,7 +15,6 @@ WORKDIR /app
 COPY /backend/.mvn/ .mvn
 COPY /backend/mvnw /backend/pom.xml ./
 RUN ./mvnw dependency:go-offline
-COPY /backend/src ./src
 CMD ["./mvnw", "spring-boot:run"]
 
 #####################################################
@@ -33,7 +32,7 @@ CMD ["./mvnw", "spring-boot:run"]
 # This frontend stage builds environment and
 # ensures all other stages are using the same base image.
 #####################################################
-FROM node:22.13-alpine AS frontend
+FROM node:22-alpine AS frontend
 
 #####################################################
 # Stage: deps
@@ -86,4 +85,3 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 CMD ["node", "server.js"]
-

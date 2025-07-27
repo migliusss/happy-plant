@@ -1,0 +1,58 @@
+### GET ALL PLANTS
+GET http://localhost:8080/plants/get
+
+### GET PLANT BY NAME
+GET http://localhost:8080/plants/get?name=Yucca
+
+### GET USER BY NAME
+GET http://localhost:8080/users/get?name=Cleoclatra
+
+### CREATE NEW USER
+POST http://localhost:8080/users/create
+Content-Type: application/json
+
+{
+  "name": "Popi"
+}
+
+### UPDATE USER
+PUT http://localhost:8080/users/update?userId=5
+Content-Type: application/json
+
+{
+  "name": "Migle"
+}
+
+### GET USER PLANTS BY USER ID
+GET http://localhost:8080/userPlants/get?userId=5
+
+### CREATE NEW USER PLANT
+POST http://localhost:8080/userPlants/create
+Content-Type: application/json
+
+{
+  "userPlantName": "Boogy",
+  "user": {
+    "userId": 5
+  },
+  "plant": {
+    "plantId": 5
+  }
+}
+
+### DELETE USER PLANT
+DELETE http://localhost:8080/userPlants/delete?userPlantId=7
+
+### GET WATERING SCHEDULE BY USER PLANT ID
+GET http://localhost:8080/wateringSchedule/get?userPlantId=1
+
+### CREATE WATERING SCHEDULE
+POST http://localhost:8080/wateringSchedule/create
+Content-Type: application/json
+
+{
+  "lastWatering": "2025-06-30",
+  "userPlant": {
+    "userPlantId": 6
+  }
+}
