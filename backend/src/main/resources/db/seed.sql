@@ -75,8 +75,6 @@ VALUES ('Yucca', 'Yucca gigantea', 'Bright indirect light', 'Every 2-3 weeks', '
         'Allow soil to dry between waterings.'),
        ('Lemon Button Fern', 'Nephrolepis cordifolia "Duffii"', 'Indirect light', 'Weekly', 'Monthly',
         'Prefers high humidity. Mist regularly and keep soil moist.'),
-       ('Philodendron', 'Philodendron "White Measure"', 'Bright indirect light', 'Weekly', 'Monthly',
-        'Allow soil to dry between waterings. Prefers humidity.'),
        ('Giant White Bird of Paradise', 'Strelitzia nicolai', 'Bright indirect light', 'Weekly', 'Monthly',
         'Prefers high humidity. Allow soil to dry between waterings.'),
        ('Canary Island Date Palm', 'Phoenix canariensis', 'Bright indirect light', 'Weekly', 'Monthly',

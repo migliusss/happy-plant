@@ -7,10 +7,10 @@
 #
 # This stage provides a Java Development Kit (JDK)
 # environment for building the application.
-# Install buld tools, copy source code and build
+# Install build tools, copy source code and build
 # commands for compile.
 #####################################################
-FROM eclipse-temurin:21.0.2_13-jdk-jammy AS backend
+FROM eclipse-temurin:25-jdk-jammy AS build
 WORKDIR /app
 COPY /backend/.mvn/ .mvn
 COPY /backend/mvnw /backend/pom.xml ./

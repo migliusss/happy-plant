@@ -3,13 +3,15 @@ package com.example.backend.controller;
 import com.example.backend.entity.User;
 import com.example.backend.service.UserService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/users")
+@RestController("Users")
+@RequestMapping("/api/v1/users")
 public class UserController {
     private final UserService userService;
 
@@ -17,55 +19,52 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/get")
-    public ResponseEntity<User> getUserByName(@RequestParam(value="name") String name) {
-        // Retrieve the User from the database.
-        Optional<User> existingUser = userService.findUserByName(name);
+    @GetMapping("/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<User> getUserByName(@PathVariable String name) {
+        if (name != null && !name.isEmpty()) {
+            Optional<User> existingUser = userService.findUserByName(name);
 
-        // If the User is not found, return a 404 (not found) status code.
-        if (existingUser.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .build();
+            if (existingUser.isEmpty()) {
+                return List.of();
+            }
+
+            List<User> user = new ArrayList<>();
+
+            user.add(existingUser.get());
+
+            return user;
         }
 
-        // Return the User with a 200 (OK) status code.
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(existingUser.get());
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Field 'name' is empty.");
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        // Save the User to the database.
-        User createdUser = userService.save(user);
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public User create(String name) {
+        if (name != null && !name.isEmpty()) {
+            User user = new User();
 
-        // Return the created User with a 201 (created) status code.
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(createdUser);
-    }
+            user.setName(name);
 
-    @PutMapping("/update")
-    public ResponseEntity<User> updateUser(@RequestParam(value="userId") Integer userId, @RequestBody User user) {
-        // Retrieve the User from the database.
-        Optional<User> existingUser = userService.findUserById(userId);
-
-        // If the User is not found, return a 404 (not found) status code.
-        if (existingUser.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .build();
+            return userService.save(user);
         }
 
-        // Update the User.
-        user.setUserId(userId);
-        User updatedUser = userService.save(user);
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Field 'name' is empty.");
+    }
 
-        // Return the updated User with a 200 (OK) status code.
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(updatedUser);
+    @PutMapping("/{id}")
+    public User update(@PathVariable Integer id, String name) {
+        Optional<User> existingUser = userService.findUserById(id);
 
+        if (existingUser.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + id + " not found.");
+        }
+
+        User user = existingUser.get();
+
+        user.setName(name);
+
+        return userService.save(user);
     }
 }

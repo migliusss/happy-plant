@@ -2,6 +2,7 @@ package com.example.backend.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Plant {
     @Id
+    @NotEmpty
     @Column(name = "plant_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer plantId;

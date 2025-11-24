@@ -7,96 +7,92 @@ import com.example.backend.service.PlantService;
 import com.example.backend.service.UserPlantService;
 import com.example.backend.service.UserService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/userPlants")
+@RestController("User Plants")
+@RequestMapping("/api/v1/userPlants")
 public class UserPlantController {
     private final UserPlantService userPlantService;
     private final UserService userService;
     private final PlantService plantService;
 
-    public UserPlantController(UserPlantService userPlantService, UserService userService, PlantService plantService) {
+    public UserPlantController(
+            UserPlantService userPlantService, UserService userService, PlantService plantService) {
         this.userPlantService = userPlantService;
         this.userService = userService;
         this.plantService = plantService;
     }
 
-    @GetMapping("/get")
-    public ResponseEntity<UserPlant> findByUserUserId(@RequestParam(value="userId") Integer userId) {
-        Optional<UserPlant> userPlant = userPlantService.findByUserUserId(userId);
+    @GetMapping("/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserPlant> get(@PathVariable Integer userId) {
+        if (userId != null) {
+            Optional<UserPlant> existingUserPlant = userPlantService.findByUserUserId(userId);
 
-        if (userPlant.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .build();
+            if (existingUserPlant.isEmpty()) {
+                return List.of();
+            }
+
+            List<UserPlant> userPlant = new ArrayList<>();
+
+            userPlant.add(existingUserPlant.get());
+
+            return userPlant;
         }
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userPlant.get());
+        return List.of();
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createUserPlant(@RequestBody UserPlant userPlant) {
-        // Make sure User exists in the database.
-        Integer userId = userPlant.getUser().getUserId();
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserPlant create(String plantName, Integer userId, Integer plantId) {
+        User user = null;
+        Plant plant = null;
 
-        User user;
+        if (userId != null) {
+            Optional<User> existingUser = userService.findUserById(userId);
 
-        Optional<User> existingUsing = userService.findUserById(userId);
+            if (existingUser.isEmpty()) {
+                throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "User with id " + userId + " not found.");
+            }
 
-        if (existingUsing.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("User with User ID " + userId + " not found.");
+            user = existingUser.get();
         }
 
-        user = existingUsing.get();
+        if (plantId != null) {
+            Optional<Plant> existingPlant = plantService.findPlantById(plantId);
 
-        // Make sure Plant exists in the database.
-        Integer plantId = userPlant.getPlant().getPlantId();
+            if (existingPlant.isEmpty()) {
+                throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Plant with id " + plantId + " not found.");
+            }
 
-        Plant plant;
-
-        Optional<Plant> existingPlant = plantService.findPlantById(plantId);
-
-        if (existingPlant.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("Plant with Plant ID " + plantId + " not found.");
+            plant = existingPlant.get();
         }
 
-        plant = existingPlant.get();
+        UserPlant userPlant = new UserPlant();
 
-        // Set UserPlant Object with User and Plant to be saved in database.
+        if (plantName != null && !plantName.isEmpty()) {
+            userPlant.setUserPlantName(plantName);
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Field 'plantName' is empty.");
+        }
+
         userPlant.setUser(user);
         userPlant.setPlant(plant);
 
-        UserPlant createdUserPlant = userPlantService.save(userPlant);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(createdUserPlant);
+        return userPlantService.save(userPlant);
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<Void> deleteUserPlant(@RequestParam(value="userPlantId") Integer userPlantId) {
-        Optional<UserPlant> existingUserPlant = userPlantService.findById(userPlantId);
-
-        if (existingUserPlant.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .build();
-        }
-
+    @DeleteMapping("/{userPlantId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void delete(@PathVariable Integer userPlantId) {
         userPlantService.delete(userPlantId);
-
-        return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .build();
     }
 }

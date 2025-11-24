@@ -10,9 +10,7 @@ import java.util.Optional;
 public class UserPlantService {
     private final UserPlantRepository userPlantRepository;
 
-    public UserPlantService(
-            UserPlantRepository userPlantRepository
-            ) {
+    public UserPlantService(UserPlantRepository userPlantRepository) {
         this.userPlantRepository = userPlantRepository;
     }
 

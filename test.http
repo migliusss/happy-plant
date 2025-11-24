@@ -1,8 +1,8 @@
 ### GET ALL PLANTS
-GET http://localhost:8080/plants/get
+GET http://localhost:8080/plants
 
 ### GET PLANT BY NAME
-GET http://localhost:8080/plants/get?name=Yucca
+GET http://localhost:8080/plants/Philodendron
 
 ### GET USER BY NAME
 GET http://localhost:8080/users/get?name=Cleoclatra
@@ -11,9 +11,6 @@ GET http://localhost:8080/users/get?name=Cleoclatra
 POST http://localhost:8080/users/create
 Content-Type: application/json
 
-{
-  "name": "Popi"
-}
 
 ### UPDATE USER
 PUT http://localhost:8080/users/update?userId=5

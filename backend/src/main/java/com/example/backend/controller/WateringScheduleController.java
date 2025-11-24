@@ -4,66 +4,70 @@ import com.example.backend.entity.UserPlant;
 import com.example.backend.entity.WateringSchedule;
 import com.example.backend.service.UserPlantService;
 import com.example.backend.service.WateringScheduleService;
+import jakarta.annotation.Nullable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/wateringSchedule")
+@RestController("Watering Schedule")
+@RequestMapping("/api/v1/wateringSchedule")
 public class WateringScheduleController {
     private final WateringScheduleService wateringScheduleService;
     private final UserPlantService userPlantService;
 
-    public WateringScheduleController(WateringScheduleService wateringScheduleService, UserPlantService userPlantService) {
+    public WateringScheduleController(
+            WateringScheduleService wateringScheduleService, UserPlantService userPlantService) {
         this.wateringScheduleService = wateringScheduleService;
         this.userPlantService = userPlantService;
     }
 
-    @GetMapping("/get")
-    public ResponseEntity<WateringSchedule> get(@RequestParam(value="userPlantId") Integer userPlantId) {
-        Optional<WateringSchedule> existingWateringSchedule = wateringScheduleService.findByUserPlantId(userPlantId);
+    @GetMapping("/{userPlantId}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<WateringSchedule> get(@PathVariable Integer userPlantId) {
+        if (userPlantId != null) {
+            Optional<WateringSchedule> existingWateringSchedule =
+                    wateringScheduleService.findByUserPlantId(userPlantId);
 
-        if (existingWateringSchedule.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .build();
+            if (existingWateringSchedule.isEmpty()) {
+                return List.of();
+            }
+
+            List<WateringSchedule> wateringSchedule = new ArrayList<>();
+
+            wateringSchedule.add(existingWateringSchedule.get());
+
+            return wateringSchedule;
         }
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(existingWateringSchedule.get());
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Field 'userPlantId' is empty.");
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody WateringSchedule wateringSchedule) {
-        // Make sure User Plant exists in the database.
-        Integer userPlantId = wateringSchedule.getUserPlant().getUserPlantId();
-
-        UserPlant userPlant;
-
+    @PostMapping("/{userPlantId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public WateringSchedule create(@PathVariable Integer userPlantId, @Nullable LocalDate lastWatering, @Nullable LocalDate nextWatering) {
         Optional<UserPlant> existingUserPlant = userPlantService.findById(userPlantId);
 
         if (existingUserPlant.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("User Plant with User Plant ID " + userPlantId + " not found.");
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "User Plant with User Plant ID " + userPlantId + " not found.");
         }
 
-        userPlant = existingUserPlant.get();
+        UserPlant userPlant = existingUserPlant.get();
 
+        WateringSchedule wateringSchedule = new WateringSchedule();
+
+        wateringSchedule.setLastWatering(Objects.requireNonNullElseGet(lastWatering, LocalDate::now));
+        wateringSchedule.setNextWatering(
+                Objects.requireNonNullElseGet(
+                        nextWatering, () -> wateringSchedule.getLastWatering().plusDays(7)));
         wateringSchedule.setUserPlant(userPlant);
 
-        // Set Next Watering date for a User Plant. Default to 7 days.
-        LocalDate nextWatering = wateringSchedule.getLastWatering().plusDays(7);
-        wateringSchedule.setNextWatering(nextWatering);
-
-        WateringSchedule createdWateringSchedule = wateringScheduleService.save(wateringSchedule);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(createdWateringSchedule);
+        return wateringScheduleService.save(wateringSchedule);
     }
 }

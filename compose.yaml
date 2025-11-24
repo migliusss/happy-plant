@@ -16,21 +16,21 @@ services:
   # The environment variables configure the application to connect to the
   # database, which is also configured in this Compose file.
   ###################################################
-  backend:
-    build:
-      context: ./
-      target: backend
-    depends_on:
-      - db
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/happy_plant
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=secret
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-    volumes:
-      - ./backend:/app
-    ports:
-      - "8080:8080"
+#  backend:
+#    build:
+#      context: ./
+#      target: backend
+#    depends_on:
+#      - db
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/happy_plant
+#      - SPRING_DATASOURCE_USERNAME=postgres
+#      - SPRING_DATASOURCE_PASSWORD=secret
+#      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+#    volumes:
+#      - ./backend:/app
+#    ports:
+#      - "8080:8080"
 
   ###################################################
   # Service: frontend-dev
