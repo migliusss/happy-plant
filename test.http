@@ -2,10 +2,10 @@
 GET http://localhost:8080/plants
 
 ### GET PLANT BY NAME
-GET http://localhost:8080/plants/Philodendron
+GET http://localhost:8080/api/v1/plants/Yucca
 
 ### GET USER BY NAME
-GET http://localhost:8080/users/get?name=Cleoclatra
+GET http://localhost:8080/api/v1/users/Cleoclatra
 
 ### CREATE NEW USER
 POST http://localhost:8080/users/create

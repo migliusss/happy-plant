@@ -23,7 +23,7 @@ public class PlantService {
         return plantRepository.findById(plantId);
     }
 
-    public Optional<Plant> findPlantByName(String name) {
-        return plantRepository.findPlantByName(name);
+    public List<Plant> findPlantByName(String name) {
+        return plantRepository.findByName(name);
     }
 }

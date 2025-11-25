@@ -10,11 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@RestController("User Plants")
+@RestController("UserPlants")
 @RequestMapping("/api/v1/userPlants")
 public class UserPlantController {
     private final UserPlantService userPlantService;
@@ -32,17 +31,7 @@ public class UserPlantController {
     @ResponseStatus(HttpStatus.OK)
     public List<UserPlant> get(@PathVariable Integer userId) {
         if (userId != null) {
-            Optional<UserPlant> existingUserPlant = userPlantService.findByUserUserId(userId);
-
-            if (existingUserPlant.isEmpty()) {
-                return List.of();
-            }
-
-            List<UserPlant> userPlant = new ArrayList<>();
-
-            userPlant.add(existingUserPlant.get());
-
-            return userPlant;
+            return userPlantService.findByUserUserId(userId);
         }
 
         return List.of();
@@ -55,7 +44,7 @@ public class UserPlantController {
         Plant plant = null;
 
         if (userId != null) {
-            Optional<User> existingUser = userService.findUserById(userId);
+            Optional<User> existingUser = userService.findById(userId);
 
             if (existingUser.isEmpty()) {
                 throw new ResponseStatusException(

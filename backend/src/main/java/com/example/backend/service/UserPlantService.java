@@ -4,6 +4,7 @@ import com.example.backend.entity.UserPlant;
 import com.example.backend.repository.UserPlantRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,7 +19,7 @@ public class UserPlantService {
         return userPlantRepository.findById(id);
     }
 
-    public Optional<UserPlant> findByUserUserId(Integer userId) {
+    public List<UserPlant> findByUserUserId(Integer userId) {
         return userPlantRepository.findByUserUserId(userId);
     }
 
