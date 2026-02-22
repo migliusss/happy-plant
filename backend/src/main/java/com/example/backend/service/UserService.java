@@ -14,12 +14,12 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public Optional<User> findUserById(Integer userId) {
+    public Optional<User> findById(Integer userId) {
         return userRepository.findById(userId);
     }
 
-    public Optional<User> findUserByName(String name) {
-        return userRepository.findUserByName(name);
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 
     public User save(User user) {

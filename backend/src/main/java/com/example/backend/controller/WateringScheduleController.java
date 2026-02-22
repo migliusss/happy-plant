@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@RestController("Watering Schedule")
+@RestController("WateringSchedule")
 @RequestMapping("/api/v1/wateringSchedule")
 public class WateringScheduleController {
     private final WateringScheduleService wateringScheduleService;

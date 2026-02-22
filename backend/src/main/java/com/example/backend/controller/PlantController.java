@@ -6,9 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController("Plants")
 @RequestMapping("/api/v1/plants")
@@ -29,17 +27,13 @@ public class PlantController {
     @ResponseStatus(HttpStatus.OK)
     public List<Plant> getPlantByName(@PathVariable String name) {
         if (name != null && !name.isEmpty()) {
-            Optional<Plant> existingPlant = plantService.findPlantByName(name);
+            List<Plant> plantList = plantService.findPlantByName(name);
 
-            if (existingPlant.isEmpty()) {
+            if (plantList.isEmpty()) {
                 return List.of();
             }
 
-            List<Plant> plant = new ArrayList<>();
-
-            plant.add(existingPlant.get());
-
-            return plant;
+            return plantList;
         }
 
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Field 'name' is empty.");

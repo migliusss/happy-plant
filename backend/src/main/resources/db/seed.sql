@@ -17,8 +17,9 @@ CREATE TABLE IF NOT EXISTS plants
 CREATE TABLE IF NOT EXISTS users
 (
     user_id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    name   VARCHAR(100) NOT NULL,
-    UNIQUE (name)
+    username   VARCHAR(100) NOT NULL,
+    password   VARCHAR(100) NOT NULL,
+    UNIQUE (username)
 );
 
 -- Create UserPlants Table
@@ -96,11 +97,11 @@ VALUES ('Yucca', 'Yucca gigantea', 'Bright indirect light', 'Every 2-3 weeks', '
 ON CONFLICT DO NOTHING;
 
 -- Insert initial data into users table
-INSERT INTO users (name)
-VALUES ('Cleoclatra'),
-       ('Waffle Bot'),
-       ('Pookey Bear'),
-       ('Tootsie Roll')
+INSERT INTO users (username, password)
+VALUES ('Cleoclatra', 'password1'),
+       ('WaffleBot', 'password2'),
+       ('PookeyBear', 'password3'),
+       ('TootsieRoll', 'password4')
 ON CONFLICT DO NOTHING;
 
 -- Insert initial data into user_plants table
