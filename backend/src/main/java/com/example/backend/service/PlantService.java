@@ -1,6 +1,6 @@
 package com.example.backend.service;
 
-import com.example.backend.entity.Plant;
+import com.example.backend.entity.plant.Plant;
 import com.example.backend.repository.PlantRepository;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +23,7 @@ public class PlantService {
         return plantRepository.findById(plantId);
     }
 
-    public List<Plant> findPlantByName(String name) {
+    public Optional<Plant> findPlantByName(String name) {
         return plantRepository.findByName(name);
     }
 }

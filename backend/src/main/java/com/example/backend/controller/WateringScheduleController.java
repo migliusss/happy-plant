@@ -1,18 +1,20 @@
 package com.example.backend.controller;
 
-import com.example.backend.entity.UserPlant;
-import com.example.backend.entity.WateringSchedule;
+import com.example.backend.entity.userPlant.UserPlant;
+import com.example.backend.entity.wateringSchedule.WateringSchedule;
+import com.example.backend.entity.wateringSchedule.WateringScheduleRequest;
+import com.example.backend.entity.wateringSchedule.WateringScheduleResponse;
 import com.example.backend.service.UserPlantService;
 import com.example.backend.service.WateringScheduleService;
-import jakarta.annotation.Nullable;
+import jakarta.validation.Valid;
+import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @RestController("WateringSchedule")
@@ -28,46 +30,59 @@ public class WateringScheduleController {
     }
 
     @GetMapping("/{userPlantId}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<WateringSchedule> get(@PathVariable Integer userPlantId) {
-        if (userPlantId != null) {
-            Optional<WateringSchedule> existingWateringSchedule =
-                    wateringScheduleService.findByUserPlantId(userPlantId);
-
-            if (existingWateringSchedule.isEmpty()) {
-                return List.of();
-            }
-
-            List<WateringSchedule> wateringSchedule = new ArrayList<>();
-
-            wateringSchedule.add(existingWateringSchedule.get());
-
-            return wateringSchedule;
+    public ResponseEntity<List<WateringScheduleResponse>> get(
+            @Valid
+            @PathVariable
+            @NonNull
+            Integer userPlantId
+    ) {
+        List<WateringScheduleResponse> response;
+        try {
+            response = wateringScheduleService.findByUserPlantId(userPlantId)
+                    .stream()
+                    .map(WateringScheduleResponse::from)
+                    .toList();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Fetching watering schedule for user plant(" + userPlantId + ") from DB failed :( Error: " + e.getMessage());
         }
 
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Field 'userPlantId' is empty.");
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PostMapping("/{userPlantId}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public WateringSchedule create(@PathVariable Integer userPlantId, @Nullable LocalDate lastWatering, @Nullable LocalDate nextWatering) {
-        Optional<UserPlant> existingUserPlant = userPlantService.findById(userPlantId);
-
-        if (existingUserPlant.isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "User Plant with User Plant ID " + userPlantId + " not found.");
+    @PostMapping
+    public ResponseEntity<WateringScheduleResponse> create(
+            @Valid
+            @RequestBody
+            WateringScheduleRequest request) {
+        Optional<UserPlant> existingUserPlant;
+        try {
+            existingUserPlant = userPlantService.findById(request.userPlantId());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Fetching user plant(" + request.userPlantId() + ") from DB failed :( Error: " + e.getMessage());
         }
 
-        UserPlant userPlant = existingUserPlant.get();
+        if (existingUserPlant.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User plant(" +  request.userPlantId() + ") not found :/");
+        }
 
-        WateringSchedule wateringSchedule = new WateringSchedule();
+        LocalDate lastWatering = request.lastWatering();
+        LocalDate nextWatering = request.nextWatering();
 
-        wateringSchedule.setLastWatering(Objects.requireNonNullElseGet(lastWatering, LocalDate::now));
-        wateringSchedule.setNextWatering(
-                Objects.requireNonNullElseGet(
-                        nextWatering, () -> wateringSchedule.getLastWatering().plusDays(7)));
-        wateringSchedule.setUserPlant(userPlant);
+        if (nextWatering == null) {
+            nextWatering = lastWatering.plusDays(7);
+        }
 
-        return wateringScheduleService.save(wateringSchedule);
+        WateringSchedule newWateringSchedule = WateringSchedule.newWateringSchedule(request.lastWatering(), nextWatering, existingUserPlant.get());
+
+        try {
+            wateringScheduleService.save(newWateringSchedule);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Saving watering schedule in DB failed :/ Error: " + e.getMessage());
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(WateringScheduleResponse.from(newWateringSchedule));
     }
 }

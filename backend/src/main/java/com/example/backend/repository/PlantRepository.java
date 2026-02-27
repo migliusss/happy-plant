@@ -1,10 +1,10 @@
 package com.example.backend.repository;
 
-import com.example.backend.entity.Plant;
+import com.example.backend.entity.plant.Plant;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface PlantRepository extends JpaRepository<Plant, Integer> {
-    List<Plant> findByName(String name);
+    Optional<Plant> findByName(String name);
 }

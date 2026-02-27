@@ -1,4 +1,4 @@
-package com.example.backend.entity;
+package com.example.backend.entity.plant;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -12,9 +12,6 @@ import lombok.Setter;
 @Table(name = "plants")
 @Getter
 @Setter
-// Construct the object either way i.e.,
-// public Plant() — no args
-// public Plant(String name, int age) — all args
 @NoArgsConstructor
 @AllArgsConstructor
 public class Plant {
@@ -22,9 +19,8 @@ public class Plant {
     @NotEmpty
     @Column(name = "plant_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer plantId;
+    private int plantId;
 
-    // Cannot be null, and the trimmed length must be greater than zero.
     @NotBlank
     @Column(name = "name", length = 100)
     private String name;

@@ -1,5 +1,6 @@
-package com.example.backend.entity;
+package com.example.backend.entity.wateringSchedule;
 
+import com.example.backend.entity.userPlant.UserPlant;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -36,4 +37,8 @@ public class WateringSchedule {
     })
     @JoinColumn(name="user_plant_id", nullable = false)
     private UserPlant userPlant;
+
+    public static WateringSchedule newWateringSchedule(LocalDate lastWatering, LocalDate nextWatering, UserPlant userPlant) {
+        return new WateringSchedule(null, lastWatering, nextWatering, userPlant);
+    }
 }

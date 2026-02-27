@@ -1,10 +1,11 @@
 package com.example.backend.service;
 
-import com.example.backend.entity.WateringSchedule;
+import com.example.backend.entity.wateringSchedule.WateringSchedule;
 import com.example.backend.repository.WateringScheduleRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class WateringScheduleService {
@@ -14,8 +15,11 @@ public class WateringScheduleService {
         this.wateringScheduleRepository = wateringScheduleRepository;
     }
 
-    public Optional<WateringSchedule> findByUserPlantId(Integer userPlantId) {
-        return wateringScheduleRepository.findByUserPlantUserPlantId(userPlantId);
+    public List<WateringSchedule> findByUserPlantId(int userPlantId) {
+        return wateringScheduleRepository.findByUserPlant_UserPlantId(
+                userPlantId,
+                Sort.by(Sort.Order.desc("lastWatering"))
+        );
     }
 
     public WateringSchedule save(WateringSchedule wateringSchedule) {

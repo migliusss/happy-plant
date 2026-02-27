@@ -1,6 +1,6 @@
 package com.example.backend.service;
 
-import com.example.backend.entity.User;
+import com.example.backend.entity.user.User;
 import com.example.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,13 @@ public class UserService {
     }
 
     public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        User user = userRepository.findByUsername(username);
+
+        if (user != null) {
+            return Optional.of(user);
+        }
+
+        return Optional.empty();
     }
 
     public User save(User user) {

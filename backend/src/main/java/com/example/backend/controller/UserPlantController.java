@@ -1,12 +1,17 @@
 package com.example.backend.controller;
 
-import com.example.backend.entity.Plant;
-import com.example.backend.entity.User;
-import com.example.backend.entity.UserPlant;
+import com.example.backend.entity.plant.Plant;
+import com.example.backend.entity.user.User;
+import com.example.backend.entity.userPlant.UserPlant;
+import com.example.backend.entity.userPlant.UserPlantRequest;
+import com.example.backend.entity.userPlant.UserPlantResponse;
 import com.example.backend.service.PlantService;
 import com.example.backend.service.UserPlantService;
 import com.example.backend.service.UserService;
+import jakarta.validation.Valid;
+import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -28,60 +33,83 @@ public class UserPlantController {
     }
 
     @GetMapping("/{userId}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<UserPlant> get(@PathVariable Integer userId) {
-        if (userId != null) {
-            return userPlantService.findByUserUserId(userId);
+    public ResponseEntity<List<UserPlantResponse>> get(
+            @Valid
+            @PathVariable
+            @NonNull
+            Integer userId
+    ) {
+        List<UserPlantResponse> response;
+        try {
+            response = userPlantService.findByUserId(userId)
+                    .stream()
+                    .map(UserPlantResponse::from)
+                    .toList();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Fetching from DB failed. Error: " + e.getMessage());
         }
 
-        return List.of();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public UserPlant create(String plantName, Integer userId, Integer plantId) {
-        User user = null;
-        Plant plant = null;
+    public ResponseEntity<UserPlantResponse> create(
+            @Valid
+            @RequestBody
+            UserPlantRequest request) {
+        int userId = request.userId();
+        int plantId = request.plantId();
 
-        if (userId != null) {
-            Optional<User> existingUser = userService.findById(userId);
-
-            if (existingUser.isEmpty()) {
-                throw new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "User with id " + userId + " not found.");
-            }
-
-            user = existingUser.get();
+        Optional<User> existingUser;
+        try {
+            existingUser = userService.findById(userId);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Fetching user(" + userId + ") from DB failed :( Error: " + e.getMessage());
         }
 
-        if (plantId != null) {
-            Optional<Plant> existingPlant = plantService.findPlantById(plantId);
+        if (existingUser.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "User(" + userId + ") not found :/");
 
-            if (existingPlant.isEmpty()) {
-                throw new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Plant with id " + plantId + " not found.");
-            }
-
-            plant = existingPlant.get();
+        Optional<Plant> existingPlant;
+        try {
+            existingPlant = plantService.findPlantById(plantId);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Fetching plant(" + plantId + ") from DB failed :( Error: " + e.getMessage());
         }
 
-        UserPlant userPlant = new UserPlant();
-
-        if (plantName != null && !plantName.isEmpty()) {
-            userPlant.setUserPlantName(plantName);
-        } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Field 'plantName' is empty.");
+        if (existingPlant.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Plant(" + plantId + ") not found :/");
         }
 
-        userPlant.setUser(user);
-        userPlant.setPlant(plant);
+        UserPlant newUserPlant;
+        try {
+            newUserPlant = userPlantService.save(request.userPlantName(), existingUser.get(), existingPlant.get());
+        }  catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Saving user plant in DB failed :( Error: " + e.getMessage());
+        }
 
-        return userPlantService.save(userPlant);
+        return ResponseEntity.status(HttpStatus.CREATED).body(UserPlantResponse.from(newUserPlant));
     }
 
     @DeleteMapping("/{userPlantId}")
-    @ResponseStatus(HttpStatus.OK)
-    public void delete(@PathVariable Integer userPlantId) {
-        userPlantService.delete(userPlantId);
+    public ResponseEntity<Void> delete(
+            @Valid
+            @PathVariable
+            @NonNull
+            Integer userPlantId
+    ) {
+        try {
+            userPlantService.delete(userPlantId);
+        } catch (Exception e) {
+            throw new  ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Delete in DB failed :( Error: " + e.getMessage());
+        }
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

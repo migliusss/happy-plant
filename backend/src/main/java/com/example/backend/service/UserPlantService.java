@@ -1,9 +1,10 @@
 package com.example.backend.service;
 
-import com.example.backend.entity.UserPlant;
+import com.example.backend.entity.plant.Plant;
+import com.example.backend.entity.user.User;
+import com.example.backend.entity.userPlant.UserPlant;
 import com.example.backend.repository.UserPlantRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -19,12 +20,16 @@ public class UserPlantService {
         return userPlantRepository.findById(id);
     }
 
-    public List<UserPlant> findByUserUserId(Integer userId) {
-        return userPlantRepository.findByUserUserId(userId);
+    public List<UserPlant> findByUserId(Integer userId) {
+        return userPlantRepository.findByUser_UserId(userId);
     }
 
-    public UserPlant save(UserPlant userPlant) {
-        return userPlantRepository.save(userPlant);
+    public UserPlant save(String userPlantName, User user, Plant plant) {
+        UserPlant newUserPlant = UserPlant.newUserPlant(userPlantName, user, plant);
+
+        userPlantRepository.save(newUserPlant);
+
+        return newUserPlant;
     }
 
     public void delete(Integer userPlantId) {

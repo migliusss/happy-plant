@@ -1,15 +1,18 @@
 package com.example.backend.controller;
 
-import com.example.backend.entity.User;
+import com.example.backend.entity.user.User;
+import com.example.backend.entity.user.UserResponse;
 import com.example.backend.service.UserService;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
+@Validated
 @RestController("Users")
 @RequestMapping("/api/v1/users")
 public class UserController {
@@ -20,22 +23,21 @@ public class UserController {
     }
 
     @GetMapping("/{username}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<User> getUserByUsername(@PathVariable String username) {
-        if (username != null && !username.isEmpty()) {
-            Optional<User> existingUser = userService.findByUsername(username);
-
-            if (existingUser.isEmpty()) {
-                return List.of();
-            }
-
-            List<User> user = new ArrayList<>();
-
-            user.add(existingUser.get());
-
-            return user;
+    public ResponseEntity<UserResponse> getUserByUsername(
+            @PathVariable
+            @NotBlank(message = "Field 'username' cannot be empty :/")
+            String username
+    ) {
+        Optional<User> response;
+        try {
+            response = userService.findByUsername(username);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Fetching user by name from DB failed :( Error: " + e.getMessage());
         }
 
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Field 'name' is empty.");
+        return response
+                .map(u -> ResponseEntity.status(HttpStatus.OK).body(UserResponse.from(u)))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 }

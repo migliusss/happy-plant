@@ -61,12 +61,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     log.info("SecurityContext auth after set: {}", SecurityContextHolder.getContext().getAuthentication());
                 } else {
-                    // TODO: Fix error handling. Throwing an exception here stops the filter chain, and it never reaches JWTAuthenticationEntryPoint.
                     throw new BadCredentialsException("Invalid or expired token :/");
                 }
             }
         } catch (Exception e) {
-            log.error("Error: {}", e.getMessage());
+            log.error("Authentication failed. Error: {}", e.getMessage());
         }
 
         // Needed for the next filter in the SecurityFilterChain.

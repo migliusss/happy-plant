@@ -1,55 +1,70 @@
+# USERS
+### SIGNUP
+POST http://localhost:8080/auth/signup
+Content-Type: application/json
+
+{
+  "username": "kna",
+  "password": "migleErBest"
+}
+
+### SIGNIN
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "username": "kna",
+  "password": "migleErBest"
+}
+
+### GET USER BY NAME
+GET http://localhost:8080/api/v1/users/kna
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrbmEiLCJpYXQiOjE3NzIxOTY3MzQsImV4cCI6MTc3MjIwMDMzNH0.g6-Djtl9RstY6JCVY201K4UOIWfwvvsyw_M2WyaAiMA
+
+
+# PLANTS
 ### GET ALL PLANTS
-GET http://localhost:8080/plants
+GET http://localhost:8080/api/v1/plants
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrbmEiLCJpYXQiOjE3NzIxOTY3MzQsImV4cCI6MTc3MjIwMDMzNH0.g6-Djtl9RstY6JCVY201K4UOIWfwvvsyw_M2WyaAiMA
 
 ### GET PLANT BY NAME
 GET http://localhost:8080/api/v1/plants/Yucca
-
-### GET USER BY NAME
-GET http://localhost:8080/api/v1/users/Cleoclatra
-
-### CREATE NEW USER
-POST http://localhost:8080/users/create
-Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrbmEiLCJpYXQiOjE3NzIxOTY3MzQsImV4cCI6MTc3MjIwMDMzNH0.g6-Djtl9RstY6JCVY201K4UOIWfwvvsyw_M2WyaAiMA
 
 
-### UPDATE USER
-PUT http://localhost:8080/users/update?userId=5
-Content-Type: application/json
-
-{
-  "name": "Migle"
-}
-
+# USER PLANTS
 ### GET USER PLANTS BY USER ID
-GET http://localhost:8080/userPlants/get?userId=5
+GET http://localhost:8080/api/v1/userPlants/6
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrbmEiLCJpYXQiOjE3NzIxOTkxMDQsImV4cCI6MTc3MjIwMjcwNH0.CMEBK1HKOpL6mmUF_XJKPgHUZn5ZN9tMWeCiLHq1BQ0
 
 ### CREATE NEW USER PLANT
-POST http://localhost:8080/userPlants/create
+POST http://localhost:8080/api/v1/userPlants
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrbmEiLCJpYXQiOjE3NzIyMDAxODAsImV4cCI6MTc3MjIwMzc4MH0.4VaYUGE4rTszCYF3nqpWSaOUGDqNU6BdMrZNQHsHS6I
 Content-Type: application/json
 
 {
-  "userPlantName": "Boogy",
-  "user": {
-    "userId": 5
-  },
-  "plant": {
-    "plantId": 5
-  }
+  "userPlantName": "hei2",
+  "userId": 10,
+  "plantId": 1
 }
 
 ### DELETE USER PLANT
-DELETE http://localhost:8080/userPlants/delete?userPlantId=7
+DELETE http://localhost:8080/api/v1/userPlants/11
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrbmEiLCJpYXQiOjE3NzIyMDAxODAsImV4cCI6MTc3MjIwMzc4MH0.4VaYUGE4rTszCYF3nqpWSaOUGDqNU6BdMrZNQHsHS6I
 
+
+# WATERING SCHEDULE
 ### GET WATERING SCHEDULE BY USER PLANT ID
-GET http://localhost:8080/wateringSchedule/get?userPlantId=1
+GET http://localhost:8080/api/v1/wateringSchedule/9
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrbmEiLCJpYXQiOjE3NzIyMDAxODAsImV4cCI6MTc3MjIwMzc4MH0.4VaYUGE4rTszCYF3nqpWSaOUGDqNU6BdMrZNQHsHS6I
 
 ### CREATE WATERING SCHEDULE
-POST http://localhost:8080/wateringSchedule/create
+POST http://localhost:8080/api/v1/wateringSchedule
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrbmEiLCJpYXQiOjE3NzIyMDAxODAsImV4cCI6MTc3MjIwMzc4MH0.4VaYUGE4rTszCYF3nqpWSaOUGDqNU6BdMrZNQHsHS6I
 Content-Type: application/json
 
 {
-  "lastWatering": "2025-06-30",
-  "userPlant": {
-    "userPlantId": 6
-  }
+  "userPlantId": 9,
+  "lastWatering": "2026-03-27",
+  "nextWatering": "2026-04-05"
 }

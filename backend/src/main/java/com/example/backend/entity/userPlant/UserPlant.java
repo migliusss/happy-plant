@@ -1,5 +1,7 @@
-package com.example.backend.entity;
+package com.example.backend.entity.userPlant;
 
+import com.example.backend.entity.plant.Plant;
+import com.example.backend.entity.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -43,4 +45,8 @@ public class UserPlant {
     })
     @JoinColumn(name="plant_id", nullable = false)
     private Plant plant;
+
+    public static UserPlant newUserPlant (String userPlantName, User user, Plant plant) {
+        return new UserPlant(null, userPlantName, user, plant);
+    }
 }
